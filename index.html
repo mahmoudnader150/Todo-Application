@@ -18,30 +18,49 @@
       background-color: #f4f4f4;
       border-radius: 4px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    }
+
+    .container p {
+      font-family: monospace;
+      font-size: 20px;
+      text-align: center;
     }
 
     h1 {
       text-align: center;
+      margin-bottom: 20px;
     }
 
     .input-container {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       margin-bottom: 10px;
     }
 
-    input[type="text"],
-    input[type="date"] {
+    .input-container>div {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .input-container label {
+      margin-right: 5px;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    .input-container input[type="text"],
+    .input-container input[type="date"] {
       flex: 1;
       padding: 10px;
       box-sizing: border-box;
       font-size: 16px;
       border: 1px solid #000;
-    }
-
-    label {
-      margin-right: 10px;
-      font-size: 16px;
+      margin: 5px;
+      width: 100%;
     }
 
     .add-task-btn {
@@ -71,10 +90,17 @@
       margin-bottom: 5px;
     }
 
+    .task-label {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
     .task-name {
       font-size: 18px;
       font-weight: bold;
       text-decoration: none;
+      margin-bottom: 5px;
+      display: inline-block;
     }
 
     .task-name.done {
@@ -84,11 +110,13 @@
     .task-description {
       font-size: 14px;
       margin-bottom: 5px;
+      display: inline-block;
     }
 
-    .task-date {
+    .task-dates {
       font-size: 14px;
       color: #888;
+      margin-top: 5px;
     }
 
     .delete-btn,
@@ -106,7 +134,6 @@
     .delete-btn:hover {
       background-color: #c9302c;
     }
-
 
     .remove-all-btn {
       display: block;
@@ -147,14 +174,25 @@
 <body>
   <div class="container">
     <h1>ToDo App</h1>
+    <p><b>[This is a ToDo application that manages your tasks.]</b></p>
     <div class="input-container">
-      <input type="text" id="taskInput" placeholder="Enter a task">
-      <input type="text" id="descriptionInput" placeholder="Enter a description" class="task-description-input">
+      <div>
+        <label for="taskInput">Task name:</label>
+        <input type="text" id="taskInput" placeholder="Enter a task">
+      </div>
+      <div>
+        <label for="descriptionInput">Description:</label>
+        <input type="text" id="descriptionInput" placeholder="Enter a description" class="task-description-input">
+      </div>
 
-      <label for="startDateInput">Start Date:</label>
-      <input type="date" id="startDateInput" style="width: 180px;">
-      <label for="endDateInput">End Date:</label>
-      <input type="date" id="endDateInput" style="width: 180px;">
+      <div>
+        <label for="startDateInput">Start Date:</label>
+        <input type="date" id="startDateInput" style="width: 180px;">
+      </div>
+      <div>
+        <label for="endDateInput">End Date:</label>
+        <input type="date" id="endDateInput" style="width: 180px;">
+      </div>
       <button class="add-task-btn" onclick="addTask()">Add Task</button>
     </div>
     <div class="sort-container">
@@ -235,12 +273,18 @@
           toggleTaskStatus(index);
         });
 
+        const taskNameContainer = document.createElement("div");
+        taskNameContainer.className = "task-name-container";
+
         const taskName = document.createElement("a");
         taskName.className = "task-name";
         taskName.innerText = task.name;
         if (task.done) {
           taskName.classList.add("done");
         }
+
+        const taskDescriptionContainer = document.createElement("div");
+        taskDescriptionContainer.className = "task-description-container";
 
         const taskDescription = document.createElement("div");
         taskDescription.className = "task-description";
@@ -266,8 +310,10 @@
         });
 
         taskItem.appendChild(checkbox);
-        taskItem.appendChild(taskName);
-        taskItem.appendChild(taskDescription);
+        taskNameContainer.appendChild(taskName);
+        taskDescriptionContainer.appendChild(taskDescription);
+        taskItem.appendChild(taskNameContainer);
+        taskItem.appendChild(taskDescriptionContainer);
         taskItem.appendChild(taskDates);
         taskItem.appendChild(deleteButton);
         taskItem.appendChild(editButton);
@@ -286,14 +332,16 @@
     // Function to edit a task name
     function editTask(index) {
       const task = tasks[index];
-      const updatedTaskName = prompt("Enter the updated task name:", task.name);
-      if (updatedTaskName) {
-        tasks[index].name = updatedTaskName.trim();
+      let updatedTaskName = prompt("Enter the updated task name:", task.name);
+      updatedTaskName = updatedTaskName.trim();
+
+      // Check if the updated task name is not empty
+      if (updatedTaskName !== "") {
+        tasks[index].name = updatedTaskName;
         renderTasks();
         localStorage.setItem("tasks", JSON.stringify(tasks));
       }
     }
-
     // Function to delete a task
     function deleteTask(index) {
       tasks.splice(index, 1);
@@ -321,11 +369,7 @@
           tasks.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
           break;
         case "endDate":
-          tasks.sort((a, b) => {
-            const dateA = new Date(a.endDate);
-            const dateB = new Date(b.endDate);
-            return dateA - dateB;
-          });
+          tasks.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
           break;
         default:
           // No sorting needed, do nothing
