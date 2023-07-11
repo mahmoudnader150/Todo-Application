@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>ToDo App</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #3b3f3b;
+      font-family: monospace;
+    }
+
+    .container {
+      width: max-content;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+      flex: 1;
+      padding: 10px;
+      box-sizing: border-box;
+      font-size: 16px;
+      border: 1px solid #000;
+    }
+
+    label {
+      margin-right: 10px;
+      font-size: 16px;
+    }
+
+    .add-task-btn {
+      padding: 10px 20px;
+      background-color: black;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      font-family: monospace;
+      margin-left: 10px;
+    }
+
+    .add-task-btn:hover {
+      background-color: #333;
+    }
+
+    .todo-item {
+      border: 2px solid #000;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .todo-item input[type="checkbox"] {
+      margin-bottom: 5px;
+    }
+
+    .task-name {
+      font-size: 18px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .task-name.done {
+      text-decoration: line-through;
+    }
+
+    .task-description {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .task-date {
+      font-size: 14px;
+      color: #888;
+    }
+
+    .delete-btn,
+    .edit-btn {
+      color: white;
+      background-color: red;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin-top: 5px;
+      margin-right: 10px;
+    }
+
+    .delete-btn:hover {
+      background-color: #c9302c;
+    }
+
+
+    .remove-all-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-family: monospace;
+    }
+
+    .remove-all-btn:hover {
+      background-color: #c9302c;
+    }
+
+    .sort-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .sort-label {
+      margin-right: 10px;
+      font-size: 16px;
+    }
+
+    .sort-select {
+      padding: 8px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>ToDo App</h1>
+    <div class="input-container">
+      <input type="text" id="taskInput" placeholder="Enter a task">
+      <input type="text" id="descriptionInput" placeholder="Enter a description" class="task-description-input">
+
+      <label for="startDateInput">Start Date:</label>
+      <input type="date" id="startDateInput" style="width: 180px;">
+      <label for="endDateInput">End Date:</label>
+      <input type="date" id="endDateInput" style="width: 180px;">
+      <button class="add-task-btn" onclick="addTask()">Add Task</button>
+    </div>
+    <div class="sort-container">
+      <label class="sort-label" for="sortSelect">Sort By:</label>
+      <select class="sort-select" id="sortSelect" onchange="sortTasks()">
+        <option value="">None</option>
+        <option value="name">Name</option>
+        <option value="startDate">Start Date</option>
+        <option value="endDate">End Date</option>
+      </select>
+    </div>
+    <div id="taskList"></div>
+    <button class="remove-all-btn" onclick="removeAllTasks()">Remove All</button>
+  </div>
+
+  <script>
+    let tasks = [];
+
+    // Load tasks from localStorage on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      const storedTasks = localStorage.getItem("tasks");
+      if (storedTasks) {
+        tasks = JSON.parse(storedTasks);
+        renderTasks();
+      }
+    });
+
+    // Function to add a task
+    function addTask() {
+      const taskInput = document.getElementById("taskInput");
+      const descriptionInput = document.getElementById("descriptionInput");
+      const startDateInput = document.getElementById("startDateInput");
+      const endDateInput = document.getElementById("endDateInput");
+
+      const startDate = new Date(startDateInput.value);
+      const endDate = new Date(endDateInput.value);
+
+      if (endDate < startDate) {
+        window.alert("End date should be greater than or equal to the start date.");
+        return;
+      }
+
+      const task = {
+        name: taskInput.value.trim(),
+        description: descriptionInput.value.trim(),
+        startDate: startDateInput.value,
+        endDate: endDateInput.value,
+        done: false
+      };
+
+      tasks.push(task);
+      taskInput.value = "";
+      descriptionInput.value = "";
+      startDateInput.value = "";
+      endDateInput.value = "";
+      renderTasks();
+
+      // Store tasks in localStorage
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    // Function to render tasks
+    function renderTasks() {
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = '';
+
+      tasks.forEach((task, index) => {
+        const taskItem = document.createElement("div");
+        taskItem.className = "todo-item";
+        if (task.done) {
+          taskItem.style.border = "2px solid green";
+        }
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = task.done;
+        checkbox.addEventListener("change", () => {
+          toggleTaskStatus(index);
+        });
+
+        const taskName = document.createElement("a");
+        taskName.className = "task-name";
+        taskName.innerText = task.name;
+        if (task.done) {
+          taskName.classList.add("done");
+        }
+
+        const taskDescription = document.createElement("div");
+        taskDescription.className = "task-description";
+        taskDescription.innerText = task.description;
+
+        const taskDates = document.createElement("div");
+        taskDates.className = "task-dates";
+        taskDates.innerHTML = `<b>Start Date:</b> ${task.startDate}<br><b>End Date:</b> ${task.endDate}`;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.innerText = "Delete";
+        deleteButton.className = "delete-btn";
+        deleteButton.addEventListener("click", () => {
+          deleteTask(index);
+        });
+
+        const editButton = document.createElement("button");
+        editButton.innerText = "Edit";
+        editButton.className = "edit-btn";
+        editButton.style.backgroundColor = "green";
+        editButton.addEventListener("click", () => {
+          editTask(index);
+        });
+
+        taskItem.appendChild(checkbox);
+        taskItem.appendChild(taskName);
+        taskItem.appendChild(taskDescription);
+        taskItem.appendChild(taskDates);
+        taskItem.appendChild(deleteButton);
+        taskItem.appendChild(editButton);
+
+        taskList.appendChild(taskItem);
+      });
+    }
+
+    // Function to toggle task status
+    function toggleTaskStatus(index) {
+      tasks[index].done = !tasks[index].done;
+      renderTasks();
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    // Function to edit a task name
+    function editTask(index) {
+      const task = tasks[index];
+      const updatedTaskName = prompt("Enter the updated task name:", task.name);
+      if (updatedTaskName) {
+        tasks[index].name = updatedTaskName.trim();
+        renderTasks();
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+      }
+    }
+
+    // Function to delete a task
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      renderTasks();
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    // Function to remove all tasks
+    function removeAllTasks() {
+      tasks = [];
+      renderTasks();
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    // Function to sort tasks based on the selected option
+    function sortTasks() {
+      const sortSelect = document.getElementById("sortSelect");
+      const selectedOption = sortSelect.value;
+
+      switch (selectedOption) {
+        case "name":
+          tasks.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case "startDate":
+          tasks.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+          break;
+        case "endDate":
+          tasks.sort((a, b) => {
+            const dateA = new Date(a.endDate);
+            const dateB = new Date(b.endDate);
+            return dateA - dateB;
+          });
+          break;
+        default:
+          // No sorting needed, do nothing
+          break;
+      }
+
+      renderTasks();
+    }
+  </script>
+</body>
+
+</html>
