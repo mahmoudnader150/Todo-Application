@@ -257,72 +257,77 @@
 
     // Function to render tasks
     function renderTasks() {
-      const taskList = document.getElementById("taskList");
-      taskList.innerHTML = '';
+  const taskList = document.getElementById("taskList");
+  taskList.innerHTML = '';
 
-      tasks.forEach((task, index) => {
-        const taskItem = document.createElement("div");
-        taskItem.className = "todo-item";
-        if (task.done) {
-          taskItem.style.border = "2px solid green";
-        }
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = task.done;
-        checkbox.addEventListener("change", () => {
-          toggleTaskStatus(index);
-        });
-
-        const taskNameContainer = document.createElement("div");
-        taskNameContainer.className = "task-name-container";
-
-        const taskName = document.createElement("a");
-        taskName.className = "task-name";
-        taskName.innerText = task.name;
-        if (task.done) {
-          taskName.classList.add("done");
-        }
-
-        const taskDescriptionContainer = document.createElement("div");
-        taskDescriptionContainer.className = "task-description-container";
-
-        const taskDescription = document.createElement("div");
-        taskDescription.className = "task-description";
-        taskDescription.innerText = task.description;
-
-        const taskDates = document.createElement("div");
-        taskDates.className = "task-dates";
-        taskDates.innerHTML = `<b>Start Date:</b> ${task.startDate}<br><b>End Date:</b> ${task.endDate}`;
-
-        const deleteButton = document.createElement("button");
-        deleteButton.innerText = "Delete";
-        deleteButton.className = "delete-btn";
-        deleteButton.addEventListener("click", () => {
-          deleteTask(index);
-        });
-
-        const editButton = document.createElement("button");
-        editButton.innerText = "Edit";
-        editButton.className = "edit-btn";
-        editButton.style.backgroundColor = "green";
-        editButton.addEventListener("click", () => {
-          editTask(index);
-        });
-        
-
-        taskItem.appendChild(checkbox);
-        taskNameContainer.appendChild(taskName);
-        taskDescriptionContainer.appendChild(taskDescription);
-        taskItem.appendChild(taskNameContainer);
-        taskItem.appendChild(taskDescriptionContainer);
-        taskItem.appendChild(taskDates);
-        taskItem.appendChild(deleteButton);
-        taskItem.appendChild(editButton);
-
-        taskList.appendChild(taskItem);
-      });
+  tasks.forEach((task, index) => {
+    const taskItem = document.createElement("div");
+    taskItem.className = "todo-item";
+    if (task.done) {
+      taskItem.style.border = "2px solid green";
     }
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = task.done;
+    checkbox.addEventListener("change", () => {
+      toggleTaskStatus(index);
+    });
+
+    const taskNameContainer = document.createElement("div");
+    taskNameContainer.className = "task-name-container";
+
+    const taskName = document.createElement("a");
+    taskName.className = "task-name";
+    taskName.innerText = task.name;
+    if (task.done) {
+      taskName.classList.add("done");
+    }
+
+    const taskDescriptionContainer = document.createElement("div");
+    taskDescriptionContainer.className = "task-description-container";
+
+    const taskDescription = document.createElement("div");
+    taskDescription.className = "task-description";
+    taskDescription.innerText = task.description;
+
+    const taskDates = document.createElement("div");
+    taskDates.className = "task-dates";
+    taskDates.innerHTML = `<b>Start Date:</b> ${task.startDate}<br><b>End Date:</b> ${task.endDate}`;
+
+    const taskPriority = document.createElement("div");
+    taskPriority.className = "task-priority";
+    taskPriority.innerText = `Priority: ${task.priority}`;
+
+    const deleteButton = document.createElement("button");
+    deleteButton.innerText = "Delete";
+    deleteButton.className = "delete-btn";
+    deleteButton.addEventListener("click", () => {
+      deleteTask(index);
+    });
+
+    const editButton = document.createElement("button");
+    editButton.innerText = "Edit";
+    editButton.className = "edit-btn";
+    editButton.style.backgroundColor = "green";
+    editButton.addEventListener("click", () => {
+      editTask(index);
+    });
+
+    taskItem.appendChild(checkbox);
+    taskNameContainer.appendChild(taskName);
+    taskDescriptionContainer.appendChild(taskDescription);
+    taskItem.appendChild(taskNameContainer);
+    taskItem.appendChild(taskDescriptionContainer);
+    taskItem.appendChild(taskDates);
+    taskItem.appendChild(taskPriority);
+    taskItem.appendChild(deleteButton);
+    taskItem.appendChild(editButton);
+
+    taskList.appendChild(taskItem);
+  });
+}
+
 
     // Function to toggle task status
     function toggleTaskStatus(index) {
