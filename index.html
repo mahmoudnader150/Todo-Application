@@ -378,6 +378,12 @@
         case "endDate":
           tasks.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
           break;
+        case "priority":
+          tasks.sort((a, b) => {
+            const priorityOrder = { high: 3, medium: 2, low: 1 };
+            return priorityOrder[b.priority] - priorityOrder[a.priority];
+          });
+          break;
         default:
           // No sorting needed, do nothing
           break;
