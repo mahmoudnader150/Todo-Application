@@ -4,6 +4,12 @@
 <head>
   <title>ToDo App</title>
   <style>
+    :root {
+      --priority-color-high: #f44336; /* Red color for high priority */
+      --priority-color-medium: #ffc107; /* Orange color for medium priority */
+      --priority-color-low: #4caf50; /* Green color for low priority */
+    }
+
     body {
       margin: 0;
       padding: 0;
@@ -12,18 +18,17 @@
     }
 
     .container {
-      width: max-content;
-      margin: 20px auto;
-      padding: 20px;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 40px;
       background-color: #f4f4f4;
       border-radius: 4px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
     }
 
     .container p {
       font-family: monospace;
-      font-size: 20px;
+      font-size: 16px;
       text-align: center;
     }
 
@@ -34,16 +39,14 @@
 
     .input-container {
       display: flex;
-      align-items: center;
       flex-wrap: wrap;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
 
     .input-container>div {
       flex: 1;
-      display: flex;
-      align-items: center;
       margin-bottom: 10px;
+      padding-right: 10px;
     }
 
     .input-container label {
@@ -53,18 +56,20 @@
     }
 
     .input-container input[type="text"],
-    .input-container input[type="date"] {
-      flex: 1;
-      padding: 10px;
+    .input-container input[type="date"],
+    .input-container select {
+      width: 100%;
+      height: 40px;
+      padding: 8px;
       box-sizing: border-box;
       font-size: 16px;
       border: 1px solid #000;
-      margin: 5px;
-      width: 100%;
+      margin-bottom: 5px;
     }
 
     .add-task-btn {
-      padding: 10px 20px;
+      width: 100%;
+      padding: 12px;
       background-color: black;
       color: white;
       border: none;
@@ -72,7 +77,7 @@
       font-size: 16px;
       cursor: pointer;
       font-family: monospace;
-      margin-left: 10px;
+      margin-top: 10px;
     }
 
     .add-task-btn:hover {
@@ -82,8 +87,11 @@
     .todo-item {
       border: 2px solid #000;
       border-radius: 4px;
-      padding: 10px;
-      margin-bottom: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
     }
 
     .todo-item input[type="checkbox"] {
@@ -93,6 +101,13 @@
     .task-label {
       font-size: 16px;
       font-weight: bold;
+    }
+
+    .task-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      margin-right: 12px;
     }
 
     .task-name {
@@ -119,16 +134,36 @@
       margin-top: 5px;
     }
 
+    .task-priority {
+      font-size: 14px;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: var(--priority-color-high); /* Red color for high priority */
+    }
+
+    .task-priority.medium {
+      color: var(--priority-color-medium); /* Orange color for medium priority */
+    }
+
+    .task-priority.low {
+      color: var(--priority-color-low); /* Green color for low priority */
+    }
+
+    .task-actions {
+      display: flex;
+      align-items: center;
+    }
+
     .delete-btn,
     .edit-btn {
       color: white;
       background-color: red;
       border: none;
       border-radius: 4px;
-      padding: 5px 10px;
+      padding: 8px 12px;
       cursor: pointer;
-      margin-top: 5px;
-      margin-right: 10px;
+      margin-left: 5px;
+      font-size: 14px;
     }
 
     .delete-btn:hover {
@@ -136,16 +171,15 @@
     }
 
     .remove-all-btn {
-      display: block;
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       background-color: #d9534f;
       color: white;
       border: none;
       border-radius: 4px;
       font-size: 16px;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 20px;
       font-family: monospace;
     }
 
@@ -156,7 +190,7 @@
     .sort-container {
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .sort-label {
@@ -165,7 +199,7 @@
     }
 
     .sort-select {
-      padding: 8px;
+      padding: 10px;
       font-size: 16px;
     }
   </style>
@@ -174,27 +208,37 @@
 <body>
   <div class="container">
     <h1>ToDo App</h1>
-    <p><b>[This is a ToDo application that manages your tasks.]</b></p>
+    <p><b>[This is a ToDo application that manages your tasks]</b></p>
+    <br>
     <div class="input-container">
       <div>
         <label for="taskInput">Task name:</label>
-        <input type="text" id="taskInput" placeholder="Enter a task">
+        <input type="text" id="taskInput" placeholder="Enter a task" class="task-name-input">
       </div>
       <div>
         <label for="descriptionInput">Description:</label>
         <input type="text" id="descriptionInput" placeholder="Enter a description" class="task-description-input">
       </div>
-
       <div>
         <label for="startDateInput">Start Date:</label>
-        <input type="date" id="startDateInput" style="width: 180px;">
+        <input type="date" id="startDateInput">
       </div>
       <div>
         <label for="endDateInput">End Date:</label>
-        <input type="date" id="endDateInput" style="width: 180px;">
+        <input type="date" id="endDateInput">
       </div>
-      <button class="add-task-btn" onclick="addTask()">Add Task</button>
+      <div>
+        <label for="priorityInput">Priority:</label>
+        <select id="priorityInput">
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
     </div>
+    <button class="add-task-btn" onclick="addTask()">Add Task</button>
+    <br>
+    <br>
     <div class="sort-container">
       <label class="sort-label" for="sortSelect">Sort By:</label>
       <select class="sort-select" id="sortSelect" onchange="sortTasks()">
@@ -202,11 +246,13 @@
         <option value="name">Name</option>
         <option value="startDate">Start Date</option>
         <option value="endDate">End Date</option>
+        <option value="priority">Priority</option>
       </select>
     </div>
     <div id="taskList"></div>
     <button class="remove-all-btn" onclick="removeAllTasks()">Remove All</button>
   </div>
+
 
   <script>
     let tasks = [];
@@ -226,6 +272,7 @@
       const descriptionInput = document.getElementById("descriptionInput");
       const startDateInput = document.getElementById("startDateInput");
       const endDateInput = document.getElementById("endDateInput");
+      const priorityInput = document.getElementById("priorityInput");
 
       const startDate = new Date(startDateInput.value);
       const endDate = new Date(endDateInput.value);
@@ -240,8 +287,8 @@
         description: descriptionInput.value.trim(),
         startDate: startDateInput.value,
         endDate: endDateInput.value,
-        done: false,
-        priority: priorityInput.value  // Add the priority property
+        priority: priorityInput.value,
+        done: false
       };
 
       tasks.push(task);
@@ -257,77 +304,78 @@
 
     // Function to render tasks
     function renderTasks() {
-  const taskList = document.getElementById("taskList");
-  taskList.innerHTML = '';
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = '';
 
-  tasks.forEach((task, index) => {
-    const taskItem = document.createElement("div");
-    taskItem.className = "todo-item";
-    if (task.done) {
-      taskItem.style.border = "2px solid green";
+      tasks.forEach((task, index) => {
+        const taskItem = document.createElement("div");
+        taskItem.className = "todo-item";
+        if (task.done) {
+          taskItem.style.border = "2px solid green";
+        }
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = task.done;
+        checkbox.addEventListener("change", () => {
+          toggleTaskStatus(index);
+        });
+
+        const taskInfo = document.createElement("div");
+        taskInfo.className = "task-info";
+
+        const taskName = document.createElement("a");
+        taskName.className = "task-name";
+        taskName.innerText = task.name;
+        if (task.done) {
+          taskName.classList.add("done");
+        }
+
+        const taskDescription = document.createElement("div");
+        taskDescription.className = "task-description";
+        taskDescription.innerText = task.description;
+
+        const taskDates = document.createElement("div");
+        taskDates.className = "task-dates";
+        taskDates.innerHTML = `<b>Start Date:</b> ${task.startDate}<br><b>End Date:</b> ${task.endDate}`;
+
+        const taskPriority = document.createElement("div");
+        taskPriority.className = "task-priority " + task.priority;
+        taskPriority.innerText = `Priority: ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}`;
+
+        taskInfo.appendChild(taskName);
+        taskInfo.appendChild(taskDescription);
+        taskInfo.appendChild(taskDates);
+        taskInfo.appendChild(taskPriority);
+
+        const taskActions = document.createElement("div");
+        taskActions.className = "task-actions";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.innerText = "Delete";
+        deleteButton.className = "delete-btn";
+        deleteButton.addEventListener("click", () => {
+          deleteTask(index);
+        });
+
+        const editButton = document.createElement("button");
+        editButton.innerText = "Edit";
+        editButton.className = "edit-btn";
+        editButton.style.backgroundColor = "green";
+        editButton.addEventListener("click", () => {
+          editTask(index);
+        });
+
+        taskActions.appendChild(deleteButton);
+        taskActions.appendChild(editButton);
+
+        taskItem.appendChild(checkbox);
+        taskItem.appendChild(taskInfo);
+        taskItem.appendChild(taskActions);
+
+        taskList.appendChild(taskItem);
+      });
     }
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = task.done;
-    checkbox.addEventListener("change", () => {
-      toggleTaskStatus(index);
-    });
-
-    const taskNameContainer = document.createElement("div");
-    taskNameContainer.className = "task-name-container";
-
-    const taskName = document.createElement("a");
-    taskName.className = "task-name";
-    taskName.innerText = task.name;
-    if (task.done) {
-      taskName.classList.add("done");
-    }
-
-    const taskDescriptionContainer = document.createElement("div");
-    taskDescriptionContainer.className = "task-description-container";
-
-    const taskDescription = document.createElement("div");
-    taskDescription.className = "task-description";
-    taskDescription.innerText = task.description;
-
-    const taskDates = document.createElement("div");
-    taskDates.className = "task-dates";
-    taskDates.innerHTML = `<b>Start Date:</b> ${task.startDate}<br><b>End Date:</b> ${task.endDate}`;
-
-    const taskPriority = document.createElement("div");
-    taskPriority.className = "task-priority";
-    taskPriority.innerText = `Priority: ${task.priority}`;
-
-    const deleteButton = document.createElement("button");
-    deleteButton.innerText = "Delete";
-    deleteButton.className = "delete-btn";
-    deleteButton.addEventListener("click", () => {
-      deleteTask(index);
-    });
-
-    const editButton = document.createElement("button");
-    editButton.innerText = "Edit";
-    editButton.className = "edit-btn";
-    editButton.style.backgroundColor = "green";
-    editButton.addEventListener("click", () => {
-      editTask(index);
-    });
-
-    taskItem.appendChild(checkbox);
-    taskNameContainer.appendChild(taskName);
-    taskDescriptionContainer.appendChild(taskDescription);
-    taskItem.appendChild(taskNameContainer);
-    taskItem.appendChild(taskDescriptionContainer);
-    taskItem.appendChild(taskDates);
-    taskItem.appendChild(taskPriority);
-    taskItem.appendChild(deleteButton);
-    taskItem.appendChild(editButton);
-
-    taskList.appendChild(taskItem);
-  });
-}
-
 
     // Function to toggle task status
     function toggleTaskStatus(index) {
@@ -349,6 +397,7 @@
         localStorage.setItem("tasks", JSON.stringify(tasks));
       }
     }
+
     // Function to delete a task
     function deleteTask(index) {
       tasks.splice(index, 1);
