@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Function to add a task
-// Function to add a task
 function addTask() {
   const taskInput = document.getElementById("taskInput");
   const descriptionInput = document.getElementById("descriptionInput");
